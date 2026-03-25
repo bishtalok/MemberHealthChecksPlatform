@@ -1,0 +1,148 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// ─── Enums ──────────────────────────────────────────────
+
+enum JourneyType {
+  BLOOD_PRESSURE
+  CHOLESTEROL
+  DIABETES
+  FULL
+}
+
+enum JourneyStatus {
+  INITIATED
+  CONSENT_GIVEN
+  PRE_ASSESSMENT_COMPLETE
+  BOOKED
+  IN_PROGRESS
+  RESULTS_READY
+  COMPLETED
+  CANCELLED
+}
+
+enum BookingStatus {
+  CONFIRMED
+  CANCELLED
+  COMPLETED
+  NO_SHOW
+}
+
+enum ResultStatus {
+  NORMAL
+  BORDERLINE
+  HIGH
+}
+
+// ─── Models ─────────────────────────────────────────────
+
+model Member {
+  id                String               @id @default(uuid()) @db.Uuid
+  insurer_member_id String               @unique
+  insurer_code      String
+  first_name        String?
+  last_name         String?
+  email             String?
+  date_of_birth     DateTime?
+  consent_given_at  DateTime?
+  consent_version   String?
+  created_at        DateTime             @default(now())
+  updated_at        DateTime             @updatedAt
+  journeys          HealthCheckJourney[]
+
+  @@map("members")
+}
+
+model HealthCheckJourney {
+  id             String        @id @default(uuid()) @db.Uuid
+  member_id      String        @db.Uuid
+  member         Member        @relation(fields: [member_id], references: [id])
+  journey_type   JourneyType   @default(FULL)
+  status         JourneyStatus @default(INITIATED)
+  pre_assessment Json?
+  created_at     DateTime      @default(now())
+  updated_at     DateTime      @updatedAt
+  booking        Booking?
+  results        Result[]
+  audit_logs     AuditLog[]
+
+  @@map("health_check_journeys")
+}
+
+model Store {
+  id       String    @id @default(uuid()) @db.Uuid
+  name     String
+  address  String
+  city     String
+  postcode String
+  phone    String?
+  slots    Slot[]
+  bookings Booking[]
+
+  @@map("stores")
+}
+
+model Slot {
+  id         String    @id @default(uuid()) @db.Uuid
+  store_id   String    @db.Uuid
+  store      Store     @relation(fields: [store_id], references: [id])
+  start_time DateTime
+  end_time   DateTime
+  capacity   Int       @default(1)
+  booked     Int       @default(0)
+  bookings   Booking[]
+
+  @@map("slots")
+}
+
+model Booking {
+  id           String             @id @default(uuid()) @db.Uuid
+  journey_id   String             @unique @db.Uuid
+  journey      HealthCheckJourney @relation(fields: [journey_id], references: [id])
+  store_id     String             @db.Uuid
+  store        Store              @relation(fields: [store_id], references: [id])
+  slot_id      String             @db.Uuid
+  slot         Slot               @relation(fields: [slot_id], references: [id])
+  status       BookingStatus      @default(CONFIRMED)
+  confirmed_at DateTime           @default(now())
+  created_at   DateTime           @default(now())
+  updated_at   DateTime           @updatedAt
+
+  @@map("bookings")
+}
+
+model Result {
+  id            String             @id @default(uuid()) @db.Uuid
+  journey_id    String             @db.Uuid
+  journey       HealthCheckJourney @relation(fields: [journey_id], references: [id])
+  metric        String
+  value         Float
+  unit          String
+  status        ResultStatus
+  pharmacist_id String?
+  notes         String?
+  recorded_at   DateTime           @default(now())
+
+  @@map("results")
+}
+
+model AuditLog {
+  id          String              @id @default(uuid()) @db.Uuid
+  entity_type String
+  entity_id   String              @db.Uuid
+  action      String
+  actor_id    String?             @db.Uuid
+  actor_role  String?
+  details     Json?
+  created_at  DateTime            @default(now())
+  journey_id  String?             @db.Uuid
+  journey     HealthCheckJourney? @relation(fields: [journey_id], references: [id])
+
+  @@map("audit_logs")
+}

@@ -1,0 +1,39 @@
+@import "tailwindcss";
+
+@theme {
+  --color-boots-navy: #003B71;
+  --color-boots-blue: #0057A8;
+  --color-boots-light-blue: #E8F4FD;
+  --color-boots-white: #FFFFFF;
+  --color-boots-grey: #F5F5F5;
+  --color-boots-dark-grey: #333333;
+  --color-boots-green: #28A745;
+  --color-boots-amber: #FFC107;
+  --color-boots-red: #DC3545;
+
+  --color-background: var(--color-boots-white);
+  --color-foreground: var(--color-boots-dark-grey);
+  --color-primary: var(--color-boots-navy);
+  --color-primary-foreground: var(--color-boots-white);
+  --color-secondary: var(--color-boots-grey);
+  --color-secondary-foreground: var(--color-boots-dark-grey);
+  --color-muted: var(--color-boots-grey);
+  --color-muted-foreground: #6B7280;
+  --color-accent: var(--color-boots-blue);
+  --color-accent-foreground: var(--color-boots-white);
+  --color-destructive: var(--color-boots-red);
+  --color-border: #E5E7EB;
+  --color-ring: var(--color-boots-blue);
+
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}
