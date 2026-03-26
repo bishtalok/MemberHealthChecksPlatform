@@ -4,6 +4,7 @@ import {
   Injectable,
   NestInterceptor,
 } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { Observable, tap } from 'rxjs';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -24,11 +25,12 @@ export class AuditLogInterceptor implements NestInterceptor {
     const path = request.route?.path || request.url;
 
     return next.handle().pipe(
-      tap(async (responseData) => {
+      tap(async (responseData: unknown) => {
         try {
+          const data = responseData as Record<string, unknown>;
           const entityId =
-            responseData?.data?.id ||
-            responseData?.id ||
+            (data?.['data'] as Record<string, unknown>)?.['id'] ||
+            data?.['id'] ||
             request.params?.id;
 
           if (entityId) {
@@ -42,7 +44,7 @@ export class AuditLogInterceptor implements NestInterceptor {
                 details: {
                   body: this.sanitizeBody(request.body),
                   params: request.params,
-                },
+                } as Prisma.InputJsonValue,
               },
             });
           }

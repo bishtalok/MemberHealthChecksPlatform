@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma, JourneyStatus } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
-import { JourneyStatus } from '@prisma/client';
 import { validateTransition } from './journey-state-machine';
 
 @Injectable()
@@ -59,7 +59,7 @@ export class JourneyService {
     return this.prisma.healthCheckJourney.update({
       where: { id },
       data: {
-        pre_assessment: answers,
+        pre_assessment: answers as Prisma.InputJsonValue,
         status: JourneyStatus.PRE_ASSESSMENT_COMPLETE,
       },
     });

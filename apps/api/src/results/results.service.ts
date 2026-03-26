@@ -3,15 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { JourneyStatus, ResultStatus } from '@prisma/client';
 import { validateTransition } from '../journey/journey-state-machine';
 import { SubmitResultsDto } from './dto/results.dto';
-
-interface NextBestAction {
-  type: 'consultation' | 'product' | 'follow_up' | 'info';
-  title: string;
-  description: string;
-  cta_label: string;
-  cta_url: string;
-  priority: number;
-}
+import { NextBestAction } from '@mhc/shared-types';
 
 const METRIC_INTERPRETATIONS: Record<string, Record<ResultStatus, string>> = {
   'Systolic Blood Pressure': {
