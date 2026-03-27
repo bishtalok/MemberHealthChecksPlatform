@@ -21,4 +21,6 @@ RUN ls -la apps/api/dist/src/main.js
 
 EXPOSE 3001
 
-CMD ["sh", "-c", "cd apps/api && npx prisma db push --accept-data-loss --skip-generate && node dist/src/main"]
+WORKDIR /app/apps/api
+
+CMD ["sh", "-c", "npx prisma db push --accept-data-loss --skip-generate && node dist/src/main"]
