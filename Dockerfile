@@ -17,8 +17,8 @@ RUN cd apps/api && npx prisma generate && echo "Prisma client generated"
 RUN cd apps/api && npx nest build && echo "NestJS built" && ls -la dist/
 
 # Step 4: Final verification
-RUN ls -la apps/api/dist/main.js
+RUN ls -la apps/api/dist/src/main.js
 
 EXPOSE 3001
 
-CMD ["sh", "-c", "cd apps/api && npx prisma db push --accept-data-loss --skip-generate && node dist/main"]
+CMD ["sh", "-c", "cd apps/api && npx prisma db push --accept-data-loss --skip-generate && node dist/src/main"]
